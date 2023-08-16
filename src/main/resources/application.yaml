@@ -1,0 +1,10 @@
+spring:
+   datasource:
+      username: bourbon_collection
+      password: bourbon_collection
+      url: jdbc:mysql://localhost:3306/bourbon_collection
+   
+   jpa:
+      hibernate:
+         ddl-auto: update
+      show-sql: true
