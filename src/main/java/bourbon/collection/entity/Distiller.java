@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -24,6 +26,8 @@ public class Distiller {
 	private String state;
 	private String zip;
 	
-	@OneToMany(mappedBy = "distiller", cascade = CascadeType.ALL)
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@OneToMany(mappedBy = "distiller", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Bottle> bottles = new HashSet<>();
 }

@@ -5,13 +5,20 @@ import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
 public class Store {
-
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long storeId;
 	
 	private String storeName;
@@ -20,6 +27,8 @@ public class Store {
 	private String state;
 	private Long zip;
 	
-	@ManyToMany(mappedBy = "bottles", cascade = CascadeType.ALL)
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@ManyToMany(mappedBy = "stores", cascade = CascadeType.ALL)
 	private Set<Bottle> bottles = new HashSet<>();
 }

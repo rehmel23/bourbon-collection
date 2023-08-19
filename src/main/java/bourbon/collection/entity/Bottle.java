@@ -8,10 +8,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -26,12 +29,18 @@ public class Bottle {
 	private String label;
 	private double price;
 	
-	@OneToOne(optional = true, mappedBy = "bottle", cascade = CascadeType.ALL)
-	private TastingNote tastingNote;
+//	@OneToOne(optional = true, mappedBy = "bottle", cascade = CascadeType.ALL)
+//	private TastingNote tastingNote;
 	
-	@ManyToOne
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "distiller_id")
 	private Distiller distiller;
 	
-	@ManyToMany(mappedBy = "bottles")
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@ManyToMany(cascade = CascadeType.PERSIST)
+	@JoinTable(name = "bottle_store", joinColumns = @JoinColumn(name = "bottle_id"), inverseJoinColumns = @JoinColumn(name = "store_id"))
 	private Set<Store> stores = new HashSet<>();
 }
