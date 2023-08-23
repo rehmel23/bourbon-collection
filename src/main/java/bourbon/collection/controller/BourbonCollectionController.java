@@ -1,7 +1,10 @@
 package bourbon.collection.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,5 +49,10 @@ public class BourbonCollectionController {
 	/**
 	 * GET all distilleries to make bottle POST easier for user to find distillerId.
 	 */
+	@GetMapping("/distiller")
+	public List<BourbonDistiller> listAllDistillers(){
+		log.info("Listing all distilleries.");
+		return bottleService.retrieveAllDistillers();
+	}
 
 }

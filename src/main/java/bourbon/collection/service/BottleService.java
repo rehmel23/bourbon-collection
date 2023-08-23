@@ -1,5 +1,7 @@
 package bourbon.collection.service;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -67,7 +69,8 @@ public class BottleService {
 
 		return bottle;
 	}
-
+	
+	@Transactional(readOnly = false)
 	public BourbonDistiller saveDistiller(BourbonDistiller bourbonDistiller) {
 		Long distillerId = bourbonDistiller.getDistillerId();
 		Distiller distiller = findOrCreateDistiller(distillerId);
@@ -101,6 +104,19 @@ public class BottleService {
 	private Distiller findDistillerById(Long distillerId) {
 		return distillerDao.findById(distillerId)
 				.orElseThrow(() -> new NoSuchElementException("Distiller with ID=" + distillerId + " does not exist."));
+	}
+	
+	@Transactional(readOnly = true)
+	public List<BourbonDistiller> retrieveAllDistillers() {
+		List<BourbonDistiller> bourbonDistiller = new LinkedList<>();
+		
+		for (Distiller distiller : distillerDao.findAll()) {
+			BourbonDistiller bd = new BourbonDistiller(distiller);
+			
+			bourbonDistiller.add(bd);
+		}
+			
+		return bourbonDistiller;
 	}
 
 }
