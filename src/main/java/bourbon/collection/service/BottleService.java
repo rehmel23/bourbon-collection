@@ -119,4 +119,27 @@ public class BottleService {
 		return bourbonDistiller;
 	}
 
+	public void deleteBottleById(Long bottleId) {
+		Bottle bottle = findBottleById(bottleId);
+		
+		bottleDao.delete(bottle);
+	}
+
+	@Transactional(readOnly = true)
+	private Bottle findBottleById(Long bottleId) {
+		return bottleDao.findById(bottleId).orElseThrow(() -> new NoSuchElementException("Bottle with ID=" + bottleId + " does not exist."));
+	}
+
+	public List<BottleData> retrieveAllBottles() {
+		List<BottleData> bottles = new LinkedList<>();
+		
+		for (Bottle bottle : bottleDao.findAll()) {
+			BottleData b = new BottleData(bottle);
+			
+			bottles.add(b);
+		}
+		
+		return bottles;
+	}
+
 }
