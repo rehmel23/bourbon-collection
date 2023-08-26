@@ -19,7 +19,7 @@ public class BottleData {
 	private String label;
 	private double price;
 //	private TastingNote tastingNote;
-	private Distiller distiller;
+	private Long distillerId;
 	private Set<BourbonStore> stores = new HashSet<>();
 
 	public BottleData(Bottle bottle) {
@@ -29,7 +29,7 @@ public class BottleData {
 		this.label = bottle.getLabel();
 		this.price = bottle.getPrice();
 //		this.tastingNote = bottle.getTastingNote();
-		this.distiller = bottle.getDistiller();
+		this.distillerId = bottle.getDistiller().getDistillerId();
 
 		for (Store store : bottle.getStores()) {
 			this.stores.add(new BourbonStore(store));
@@ -44,7 +44,7 @@ public class BottleData {
 		private String streetAddress;
 		private String city;
 		private String state;
-		private Long zip;
+		private String zip;
 		
 		public BourbonStore(Store store) {
 			this.storeId = store.getStoreId();

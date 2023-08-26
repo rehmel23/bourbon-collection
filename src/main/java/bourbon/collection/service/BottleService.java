@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import bourbon.collection.controller.model.BottleData;
 import bourbon.collection.controller.model.BottleData.BourbonDistiller;
+import bourbon.collection.controller.model.BottleData.BourbonStore;
 import bourbon.collection.dao.BottleDao;
 import bourbon.collection.dao.DistillerDao;
+import bourbon.collection.dao.StoreDao;
 import bourbon.collection.entity.Bottle;
 import bourbon.collection.entity.Distiller;
+import bourbon.collection.entity.Store;
 
 @Service
 public class BottleService {
@@ -25,15 +28,18 @@ public class BottleService {
 	@Autowired
 	private DistillerDao distillerDao;
 
+	@Autowired
+	private StoreDao storeDao;
+
 	@Transactional(readOnly = false)
 	public BottleData saveBottle(BottleData bottleData, Long distillerId) {
 		Distiller distiller = findDistillerById(distillerId);
 		Bottle bottle = findOrCreateBottle(distillerId, bottleData.getBottleId());
-		
+
 		copyBottleFields(bottle, bottleData);
 		bottle.setDistiller(distiller);
 		distiller.getBottles().add(bottle);
-		
+
 		return new BottleData(bottleDao.save(bottle));
 	}
 
@@ -43,7 +49,7 @@ public class BottleService {
 		bottle.setProof(bottleData.getProof());
 		bottle.setLabel(bottleData.getLabel());
 		bottle.setPrice(bottleData.getPrice());
-		bottle.setDistiller(bottleData.getDistiller());
+		bottle.setDistiller(findDistillerById(bottleData.getDistillerId()));
 	}
 
 	private Bottle findOrCreateBottle(Long distillerId, Long bottleId) {
@@ -69,7 +75,7 @@ public class BottleService {
 
 		return bottle;
 	}
-	
+
 	@Transactional(readOnly = false)
 	public BourbonDistiller saveDistiller(BourbonDistiller bourbonDistiller) {
 		Long distillerId = bourbonDistiller.getDistillerId();
@@ -105,41 +111,81 @@ public class BottleService {
 		return distillerDao.findById(distillerId)
 				.orElseThrow(() -> new NoSuchElementException("Distiller with ID=" + distillerId + " does not exist."));
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<BourbonDistiller> retrieveAllDistillers() {
 		List<BourbonDistiller> bourbonDistiller = new LinkedList<>();
-		
+
 		for (Distiller distiller : distillerDao.findAll()) {
 			BourbonDistiller bd = new BourbonDistiller(distiller);
-			
+
 			bourbonDistiller.add(bd);
 		}
-			
+
 		return bourbonDistiller;
 	}
 
 	public void deleteBottleById(Long bottleId) {
 		Bottle bottle = findBottleById(bottleId);
-		
+
 		bottleDao.delete(bottle);
 	}
 
 	@Transactional(readOnly = true)
 	private Bottle findBottleById(Long bottleId) {
-		return bottleDao.findById(bottleId).orElseThrow(() -> new NoSuchElementException("Bottle with ID=" + bottleId + " does not exist."));
+		return bottleDao.findById(bottleId)
+				.orElseThrow(() -> new NoSuchElementException("Bottle with ID=" + bottleId + " does not exist."));
 	}
 
 	public List<BottleData> retrieveAllBottles() {
 		List<BottleData> bottles = new LinkedList<>();
-		
+
 		for (Bottle bottle : bottleDao.findAll()) {
 			BottleData b = new BottleData(bottle);
-			
+
 			bottles.add(b);
 		}
-		
+
 		return bottles;
+	}
+
+	@Transactional(readOnly = false)
+	public BourbonStore saveStore(BourbonStore bourbonStore, Long bottleId) {
+		Bottle bottle = findBottleById(bottleId);
+		Store store = findOrCreateStore(bourbonStore.getStoreId());
+
+		copyStoreFields(store, bourbonStore);
+		store.getBottles().add(bottle);
+		bottle.getStores().add(store);
+
+		return new BourbonStore(storeDao.save(store));
+	}
+
+	private void copyStoreFields(Store store, BourbonStore bourbonStore) {
+		store.setStoreId(bourbonStore.getStoreId());
+		store.setStoreName(bourbonStore.getStoreName());
+		store.setStreetAddress(bourbonStore.getStreetAddress());
+		store.setCity(bourbonStore.getCity());
+		store.setState(bourbonStore.getState());
+		store.setZip(bourbonStore.getZip());
+	}
+
+	private Store findOrCreateStore(Long storeId) {
+		Store store;
+
+		if (Objects.isNull(storeId)) {
+			store = new Store();
+		} else {
+			store = findStoreById(storeId);
+		}
+
+		return store;
+	}
+
+	@Transactional(readOnly = true)
+	private Store findStoreById(Long storeId) {
+		return storeDao.findById(storeId)
+				.orElseThrow(() -> new NoSuchElementException("Store with ID=" + storeId + " does not exist."));
 	}
 
 }

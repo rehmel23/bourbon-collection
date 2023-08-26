@@ -25,7 +25,7 @@ public class Store {
 	private String streetAddress;
 	private String city;
 	private String state;
-	private Long zip;
+	private String zip;
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bourbon.collection.controller.model.BottleData;
 import bourbon.collection.controller.model.BottleData.BourbonDistiller;
+import bourbon.collection.controller.model.BottleData.BourbonStore;
 import bourbon.collection.service.BottleService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +28,16 @@ public class BourbonCollectionController {
 	@Autowired
 	private BottleService bottleService;
 
-	// Infinite Loop on return, PUTs into DB correctly.
+	/**
+	 * POST new bottle to collection
+	 * 
+	 * @param distillerId - PathVariable
+	 * @param bottleData  - RequestBody
+	 * @return BottleData
+	 * 
+	 *         Infinite loop is fixed. Returns 500 status. IllegalArgumentException:
+	 *         The given id must not be null. Distiller id?
+	 */
 	@PostMapping("/{distillerId}/bottle")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public BottleData insertBottle(@PathVariable Long distillerId, @RequestBody BottleData bottleData) {
@@ -36,7 +46,7 @@ public class BourbonCollectionController {
 	}
 
 	/**
-	 * PUT new distillery in database
+	 * POST new distillery to database
 	 * 
 	 * @param bourbonDistiller
 	 * @return Distiller information
@@ -44,36 +54,60 @@ public class BourbonCollectionController {
 	@PostMapping("/distiller")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public BourbonDistiller addDistiller(@RequestBody BourbonDistiller bourbonDistiller) {
-		log.info("Adding distiller {}.", bourbonDistiller.getDistillerName());
+		log.info("Adding distiller, {}.", bourbonDistiller.getDistillerName());
 		return bottleService.saveDistiller(bourbonDistiller);
+	}
+
+	// POST new store to bottle
+	@PostMapping("/store/{bottleId}")
+	public BourbonStore addStoreToBottle(@RequestBody BourbonStore bourbonStore, @PathVariable Long bottleId) {
+		log.info("Adding store, {}, to bottle {}.", bourbonStore.getStoreName(), bottleId);
+		return bottleService.saveStore(bourbonStore, bottleId);
 	}
 
 	/**
 	 * GET all distilleries to make bottle POST easier for user to find distillerId.
 	 */
 	@GetMapping("/distillers")
-	public List<BourbonDistiller> listAllDistillers(){
+	public List<BourbonDistiller> listAllDistillers() {
 		log.info("Listing all distilleries.");
 		return bottleService.retrieveAllDistillers();
 	}
-	
+
+	// GET distillery by ID
+
 	@GetMapping("/bottles")
-	public List<BottleData> listAllBottlesInCollection(){
+	public List<BottleData> listAllBottlesInCollection() {
 		log.info("Listing all bottles in the collection.");
 		return bottleService.retrieveAllBottles();
 	}
+
+	// GET Bottle by ID
+
+	// GET Store by Bottle ID (Where did I buy that?)
 	
+	// PUT for bottle (only price?)
+	
+	// PUT for distillery (address?)
+	
+	// PUT for store (address?)
+
 	/**
 	 * DELETE single bottle by ID
+	 * 
 	 * @param bottleId
 	 * @return
 	 */
 	@DeleteMapping("/bottle/{bottleId}")
-	public Map<String, String> deleteBottleById(@PathVariable Long bottleId){
+	public Map<String, String> deleteBottleById(@PathVariable Long bottleId) {
 		log.info("Deleting bottle with ID={}", bottleId);
 		bottleService.deleteBottleById(bottleId);
-		
+
 		return Map.of("message", "Deletion of bottle with ID=" + bottleId + " was successful.");
 	}
+
+	// DELETE distiller by ID
+
+	// DELETE store by ID
 
 }
