@@ -36,8 +36,8 @@ public class BottleService {
 		Distiller distiller = findDistillerById(distillerId);
 		Bottle bottle = findOrCreateBottle(distillerId, bottleData.getBottleId());
 
+//		bottle.setDistiller(distiller);
 		copyBottleFields(bottle, bottleData);
-		bottle.setDistiller(distiller);
 		distiller.getBottles().add(bottle);
 
 		return new BottleData(bottleDao.save(bottle));
