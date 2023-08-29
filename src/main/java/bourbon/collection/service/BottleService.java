@@ -55,7 +55,6 @@ public class BottleService {
 		bottle.setProof(bottleData.getProof());
 		bottle.setLabel(bottleData.getLabel());
 		bottle.setPrice(bottleData.getPrice());
-		bottle.setDistiller(findDistillerById(bottleData.getDistillerId()));
 	}
 
 	private Bottle findOrCreateBottle(Long distillerId, Long bottleId) {
