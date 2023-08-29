@@ -56,11 +56,7 @@ public class BottleData {
 		}
 		
 	}
-	/**
-	 * Not sure if this inner class is needed
-	 * @author clayr
-	 *
-	 */
+	
 	@Data
 	@NoArgsConstructor
 	public static class BourbonDistiller {
@@ -70,12 +66,18 @@ public class BottleData {
 		private String state;
 		private String zip;
 		
+		private Set<Bottle> bottles;
+		
 		public BourbonDistiller(Distiller distiller) {
 			this.distillerId = distiller.getDistillerId();
 			this.distillerName = distiller.getDistillerName();
 			this.city = distiller.getCity();
 			this.state = distiller.getState();
 			this.zip = distiller.getZip();
+			
+//			for (Bottle bottle : distiller.getBottles()) {
+//				this.bottles.add(bottle);
+//			}
 		}
 	}
 }

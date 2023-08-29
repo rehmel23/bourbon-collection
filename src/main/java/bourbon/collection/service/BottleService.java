@@ -1,9 +1,11 @@
 package bourbon.collection.service;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +20,10 @@ import bourbon.collection.dao.StoreDao;
 import bourbon.collection.entity.Bottle;
 import bourbon.collection.entity.Distiller;
 import bourbon.collection.entity.Store;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class BottleService {
 
 	@Autowired
@@ -35,11 +39,13 @@ public class BottleService {
 	public BottleData saveBottle(BottleData bottleData, Long distillerId) {
 		Distiller distiller = findDistillerById(distillerId);
 		Bottle bottle = findOrCreateBottle(distillerId, bottleData.getBottleId());
-
-//		bottle.setDistiller(distiller);
+		
+		bottle.setDistiller(distiller);
+		log.info("setDistiller {}.", distillerId);
 		copyBottleFields(bottle, bottleData);
+		log.info("copyBottleFields {}", distillerId);
 		distiller.getBottles().add(bottle);
-
+		log.info(bottle.toString());
 		return new BottleData(bottleDao.save(bottle));
 	}
 
@@ -186,6 +192,24 @@ public class BottleService {
 	private Store findStoreById(Long storeId) {
 		return storeDao.findById(storeId)
 				.orElseThrow(() -> new NoSuchElementException("Store with ID=" + storeId + " does not exist."));
+	}
+
+	@Transactional(readOnly = true)
+	public BottleData retrieveBottleById(Long bottleId) {
+		Bottle bottle = findBottleById(bottleId);
+		return new BottleData(bottle);
+	}
+
+	@Transactional(readOnly = true)
+	public Set<BourbonStore> retrieveStoreByBottleId(Long bottleId) {
+		Bottle bottle = findBottleById(bottleId);
+		Set<BourbonStore> foundStores = new HashSet<>();
+		
+		for (Store store : bottle.getStores()) {
+			foundStores.add(new BourbonStore(store));
+		}
+		
+		return foundStores;
 	}
 
 }

@@ -2,6 +2,7 @@ package bourbon.collection.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -83,8 +84,18 @@ public class BourbonCollectionController {
 	}
 
 	// GET Bottle by ID
+	@GetMapping("/bottle/{bottleId}")
+	public BottleData findBottleById(@PathVariable Long bottleId) {
+		log.info("Retrieving bottle with ID={}", bottleId);
+		return bottleService.retrieveBottleById(bottleId);
+	}
 
 	// GET Store by Bottle ID (Where did I buy that?)
+	@GetMapping("/store/{bottleId}")
+	public Set<BourbonStore> findStoreByBottleId(@PathVariable Long bottleId) {
+		log.info("Retrieving store for bottle with ID={}", bottleId);
+		return bottleService.retrieveStoreByBottleId(bottleId);
+	}
 	
 	// PUT for bottle (only price?)
 	
