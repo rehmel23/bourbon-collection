@@ -34,7 +34,7 @@ public class Bottle {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "distiller_id")
 	private Distiller distiller;
 	

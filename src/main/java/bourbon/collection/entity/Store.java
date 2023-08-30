@@ -29,6 +29,6 @@ public class Store {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany(mappedBy = "stores", cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "stores")
 	private Set<Bottle> bottles = new HashSet<>();
 }
