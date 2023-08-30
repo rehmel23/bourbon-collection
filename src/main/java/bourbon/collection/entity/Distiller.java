@@ -28,6 +28,6 @@ public class Distiller {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToMany(mappedBy = "distiller", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "distiller", cascade = CascadeType.ALL, orphanRemoval = false)
 	private Set<Bottle> bottles = new HashSet<>();
 }

@@ -138,6 +138,7 @@ public class BottleService {
 		return bourbonDistiller;
 	}
 
+	@Transactional(readOnly = false)
 	public void deleteBottleById(Long bottleId) {
 		Bottle bottle = findBottleById(bottleId);
 
@@ -234,6 +235,21 @@ public class BottleService {
 	public BourbonDistiller retrieveDistillerById(Long distillerId) {
 		Distiller distiller = findDistillerById(distillerId);
 		return new BourbonDistiller(distiller);
+	}
+
+	@Transactional(readOnly = false)
+	public void deleteDistillerById(Long distillerId) {
+		Distiller distiller = findDistillerById(distillerId);
+		
+		distillerDao.delete(distiller);
+	}
+
+	@Transactional(readOnly = false)
+	public void deleteStoreById(Long storeId) {
+		Store store = findStoreById(storeId);
+		
+		storeDao.delete(store);
+		
 	}
 
 }

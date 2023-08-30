@@ -153,7 +153,20 @@ public class BourbonCollectionController {
 	}
 
 	// DELETE distiller by ID
-
+	@DeleteMapping("/distiller/{distillerId}")
+	public Map<String, String> deleteDistillerById(@PathVariable Long distillerId){
+		log.info("Deleting distiller with ID={}", distillerId);
+		bottleService.deleteDistillerById(distillerId);
+		
+		return Map.of("message", "Deletion of distiller with ID=" + distillerId + " was successful.");
+	}
+	
 	// DELETE store by ID
-
+	@DeleteMapping("/store/{storeId}")
+	public Map<String, String> deleteStoreById(@PathVariable Long storeId){
+		log.info("Deleting store with ID={}", storeId);
+		bottleService.deleteStoreById(storeId);
+		
+		return Map.of("message", "Deletion of store with ID=" + storeId + " was successful.");
+	}
 }
