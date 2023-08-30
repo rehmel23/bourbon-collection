@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -76,6 +77,11 @@ public class BourbonCollectionController {
 	}
 
 	// GET distillery by ID
+	@GetMapping("/distiller/{distillerId}")
+	public BourbonDistiller findDistillerById(Long distillerId) {
+		log.info("Retrieving distiller with ID={}", distillerId);
+		return bottleService.retrieveDistillerById(distillerId);
+	}
 
 	@GetMapping("/bottles")
 	public List<BottleData> listAllBottlesInCollection() {
@@ -91,18 +97,47 @@ public class BourbonCollectionController {
 	}
 
 	// GET Store by Bottle ID (Where did I buy that?)
-	@GetMapping("/store/{bottleId}")
+	@GetMapping("/store/bottle/{bottleId}")
 	public Set<BourbonStore> findStoreByBottleId(@PathVariable Long bottleId) {
 		log.info("Retrieving store for bottle with ID={}", bottleId);
 		return bottleService.retrieveStoreByBottleId(bottleId);
 	}
-	
-	// PUT for bottle (only price?)
-	
-	// PUT for distillery (address?)
-	
-	// PUT for store (address?)
 
+	/*
+	 *  PUT for bottle *TEST*
+	 *  
+	 *  500 Error due to null distillierId
+	 */
+	@PutMapping("/bottle/{bottleId}")
+	public BottleData updateBottle(@PathVariable Long bottleId, @RequestBody BottleData bottleData) {
+		bottleData.setBottleId(bottleId);
+		log.info("Updating bottle {}", bottleId);
+		return bottleService.saveBottle(bottleData);
+	}
+	/*
+	 *  PUT for distillery
+	 *  
+	 *  
+	 */
+	@PutMapping("/distiller/{distillerId}")
+	public BourbonDistiller updateDistillery(@PathVariable Long distillerId, @RequestBody BourbonDistiller bourbonDistiller) {
+		bourbonDistiller.setDistillerId(distillerId);
+		log.info("Updating distiller {}", distillerId);
+		return bottleService.saveDistiller(bourbonDistiller);
+	}
+	
+	/*
+	 *  PUT for store
+	 *  
+	 *  Creates new store with each request.
+	 */
+	@PutMapping("/store/{storeId}")
+	public BourbonStore updateStore(@PathVariable Long storeId, @RequestBody BourbonStore bourbonStore) {
+		bourbonStore.setStoreId(storeId);
+		log.info("Updating store {}", storeId);
+		return bottleService.saveStore(bourbonStore);
+	}
+	
 	/**
 	 * DELETE single bottle by ID
 	 * 

@@ -20,10 +20,8 @@ import bourbon.collection.dao.StoreDao;
 import bourbon.collection.entity.Bottle;
 import bourbon.collection.entity.Distiller;
 import bourbon.collection.entity.Store;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
 public class BottleService {
 
 	@Autowired
@@ -39,13 +37,11 @@ public class BottleService {
 	public BottleData saveBottle(BottleData bottleData, Long distillerId) {
 		Distiller distiller = findDistillerById(distillerId);
 		Bottle bottle = findOrCreateBottle(distillerId, bottleData.getBottleId());
-		
+
 		bottle.setDistiller(distiller);
-		log.info("setDistiller {}.", distillerId);
 		copyBottleFields(bottle, bottleData);
-		log.info("copyBottleFields {}", distillerId);
 		distiller.getBottles().add(bottle);
-		log.info(bottle.toString());
+
 		return new BottleData(bottleDao.save(bottle));
 	}
 
@@ -79,6 +75,18 @@ public class BottleService {
 		}
 
 		return bottle;
+	}
+
+	@Transactional(readOnly = true)
+	public BottleData saveBottle(BottleData bottleData) {
+		Long bottleId = bottleData.getBottleId();
+		Bottle bottle = findOrCreateBottle(bottleData.getDistillerId(), bottleId);
+		
+		bottle.setDistiller(findDistillerById(bottleData.getDistillerId()));
+		copyBottleFields(bottle, bottleData);
+		
+		Bottle dbBottle = bottleDao.save(bottle);
+		return new BottleData(dbBottle);
 	}
 
 	@Transactional(readOnly = false)
@@ -193,6 +201,17 @@ public class BottleService {
 				.orElseThrow(() -> new NoSuchElementException("Store with ID=" + storeId + " does not exist."));
 	}
 
+	@Transactional(readOnly = false)
+	public BourbonStore saveStore(BourbonStore bourbonStore) {
+		Long storeId = bourbonStore.getStoreId();
+		Store store = findOrCreateStore(storeId);
+
+		copyStoreFields(store, bourbonStore);
+
+		Store dbStore = storeDao.save(store);
+		return new BourbonStore(dbStore);
+	}
+
 	@Transactional(readOnly = true)
 	public BottleData retrieveBottleById(Long bottleId) {
 		Bottle bottle = findBottleById(bottleId);
@@ -203,12 +222,18 @@ public class BottleService {
 	public Set<BourbonStore> retrieveStoreByBottleId(Long bottleId) {
 		Bottle bottle = findBottleById(bottleId);
 		Set<BourbonStore> foundStores = new HashSet<>();
-		
+
 		for (Store store : bottle.getStores()) {
 			foundStores.add(new BourbonStore(store));
 		}
-		
+
 		return foundStores;
+	}
+
+	@Transactional(readOnly = true)
+	public BourbonDistiller retrieveDistillerById(Long distillerId) {
+		Distiller distiller = findDistillerById(distillerId);
+		return new BourbonDistiller(distiller);
 	}
 
 }
