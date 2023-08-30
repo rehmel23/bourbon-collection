@@ -77,18 +77,6 @@ public class BottleService {
 		return bottle;
 	}
 
-	@Transactional(readOnly = true)
-	public BottleData saveBottle(BottleData bottleData) {
-		Long bottleId = bottleData.getBottleId();
-		Bottle bottle = findOrCreateBottle(bottleData.getDistillerId(), bottleId);
-		
-		bottle.setDistiller(findDistillerById(bottleData.getDistillerId()));
-		copyBottleFields(bottle, bottleData);
-		
-		Bottle dbBottle = bottleDao.save(bottle);
-		return new BottleData(dbBottle);
-	}
-
 	@Transactional(readOnly = false)
 	public BourbonDistiller saveDistiller(BourbonDistiller bourbonDistiller) {
 		Long distillerId = bourbonDistiller.getDistillerId();
@@ -250,6 +238,19 @@ public class BottleService {
 		
 		storeDao.delete(store);
 		
+	}
+
+	public BottleData saveStoreToBottle(Long storeId, Long bottleId) {
+		Store store = findStoreById(storeId);
+		Bottle bottle = findBottleById(bottleId);
+		
+		store.getBottles().add(bottle);
+		bottle.getStores().add(store);
+		
+		storeDao.save(store);
+		bottleDao.save(bottle);
+		
+		return new BottleData(bottle);
 	}
 
 }

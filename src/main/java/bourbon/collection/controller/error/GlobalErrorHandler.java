@@ -27,4 +27,11 @@ public class GlobalErrorHandler {
 		log.error("Exception", ex.toString());
 		return Map.of("message", ex.toString());
 	}
+	
+	@ExceptionHandler(UnsupportedOperationException.class)
+	@ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
+	public Map<String, String> handleUnsupportedOperationException(UnsupportedOperationException ex){
+		log.error("Exception", ex.toString());
+		return Map.of("message", ex.toString());
+	}
 }

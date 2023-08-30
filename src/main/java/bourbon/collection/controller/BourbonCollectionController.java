@@ -56,23 +56,31 @@ public class BourbonCollectionController {
 	@PostMapping("/distiller")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public BourbonDistiller addDistiller(@RequestBody BourbonDistiller bourbonDistiller) {
-		log.info("Adding distiller, {}.", bourbonDistiller.getDistillerName());
+		log.info("Adding distiller {}", bourbonDistiller.getDistillerName());
 		return bottleService.saveDistiller(bourbonDistiller);
 	}
 
 	// POST new store to bottle
 	@PostMapping("/store/{bottleId}")
-	public BourbonStore addStoreToBottle(@RequestBody BourbonStore bourbonStore, @PathVariable Long bottleId) {
-		log.info("Adding store, {}, to bottle {}.", bourbonStore.getStoreName(), bottleId);
+	@ResponseStatus(code = HttpStatus.CREATED)
+	public BourbonStore addNewStoreToBottle(@RequestBody BourbonStore bourbonStore, @PathVariable Long bottleId) {
+		log.info("Adding new store {} to bottle {}", bourbonStore.getStoreName(), bottleId);
 		return bottleService.saveStore(bourbonStore, bottleId);
 	}
 
+	// POST to connect existing bottle to existing store
+	@PostMapping("/store/{storeId}/bottle/{bottleId}")
+	public BottleData addExistingStoreToBottle(@PathVariable Long storeId, @PathVariable Long bottleId) {
+		log.info("Adding store {} to bottle {}", storeId, bottleId);
+		return bottleService.saveStoreToBottle(storeId, bottleId);
+	}
+	
 	/**
 	 * GET all distilleries to make bottle POST easier for user to find distillerId.
 	 */
 	@GetMapping("/distillers")
 	public List<BourbonDistiller> listAllDistillers() {
-		log.info("Listing all distilleries.");
+		log.info("Listing all distilleries");
 		return bottleService.retrieveAllDistillers();
 	}
 
@@ -85,7 +93,7 @@ public class BourbonCollectionController {
 
 	@GetMapping("/bottles")
 	public List<BottleData> listAllBottlesInCollection() {
-		log.info("Listing all bottles in the collection.");
+		log.info("Listing all bottles in the collection");
 		return bottleService.retrieveAllBottles();
 	}
 
@@ -104,15 +112,14 @@ public class BourbonCollectionController {
 	}
 
 	/*
-	 *  PUT for bottle *TEST*
+	 *  PUT for bottle
 	 *  
-	 *  500 Error due to null distillierId
 	 */
-	@PutMapping("/bottle/{bottleId}")
-	public BottleData updateBottle(@PathVariable Long bottleId, @RequestBody BottleData bottleData) {
+	@PutMapping("{distillerId}/bottle/{bottleId}")
+	public BottleData updateBottle(@PathVariable Long distillerId, @PathVariable Long bottleId, @RequestBody BottleData bottleData) {
 		bottleData.setBottleId(bottleId);
-		log.info("Updating bottle {}", bottleId);
-		return bottleService.saveBottle(bottleData);
+		log.info("Updating bottle {} from distiller {}", bottleId, distillerId);
+		return bottleService.saveBottle(bottleData, distillerId);
 	}
 	/*
 	 *  PUT for distillery
@@ -129,7 +136,6 @@ public class BourbonCollectionController {
 	/*
 	 *  PUT for store
 	 *  
-	 *  Creates new store with each request.
 	 */
 	@PutMapping("/store/{storeId}")
 	public BourbonStore updateStore(@PathVariable Long storeId, @RequestBody BourbonStore bourbonStore) {
