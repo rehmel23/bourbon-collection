@@ -22,11 +22,19 @@ import bourbon.collection.controller.model.BottleData.BourbonStore;
 import bourbon.collection.service.BottleService;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Bourbon Collection Application Controllers - define what each CRUD HTTP
+ * request does
+ * 
+ * @author clayr
+ *
+ */
 @RestController
 @RequestMapping("/bourbon_collection")
 @Slf4j
 public class BourbonCollectionController {
 
+	// Instance variable of BottleService class to be called by Controller methods
 	@Autowired
 	private BottleService bottleService;
 
@@ -36,9 +44,6 @@ public class BourbonCollectionController {
 	 * @param distillerId - PathVariable
 	 * @param bottleData  - RequestBody
 	 * @return BottleData
-	 * 
-	 *         Infinite loop is fixed. Returns 500 status. IllegalArgumentException:
-	 *         The given id must not be null. Distiller id?
 	 */
 	@PostMapping("/{distillerId}/bottle")
 	@ResponseStatus(code = HttpStatus.CREATED)
@@ -50,7 +55,7 @@ public class BourbonCollectionController {
 	/**
 	 * POST new distillery to database
 	 * 
-	 * @param bourbonDistiller
+	 * @param bourbonDistiller - RequestBody
 	 * @return Distiller information
 	 */
 	@PostMapping("/distiller")
@@ -60,7 +65,13 @@ public class BourbonCollectionController {
 		return bottleService.saveDistiller(bourbonDistiller);
 	}
 
-	// POST new store to bottle
+	/**
+	 * POST new store to bottle
+	 * 
+	 * @param bourbonStore - RequestBody
+	 * @param bottleId     - PathVariable
+	 * @return Store information
+	 */
 	@PostMapping("/store/{bottleId}")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public BourbonStore addNewStoreToBottle(@RequestBody BourbonStore bourbonStore, @PathVariable Long bottleId) {
@@ -68,15 +79,23 @@ public class BourbonCollectionController {
 		return bottleService.saveStore(bourbonStore, bottleId);
 	}
 
-	// POST to connect existing bottle to existing store
+	/**
+	 * POST to connect existing bottle to existing store
+	 * 
+	 * @param storeId  - PathVariable
+	 * @param bottleId - PathVariable
+	 * @return Store information
+	 */
 	@PostMapping("/store/{storeId}/bottle/{bottleId}")
 	public BottleData addExistingStoreToBottle(@PathVariable Long storeId, @PathVariable Long bottleId) {
 		log.info("Adding store {} to bottle {}", storeId, bottleId);
 		return bottleService.saveStoreToBottle(storeId, bottleId);
 	}
-	
+
 	/**
 	 * GET all distilleries to make bottle POST easier for user to find distillerId.
+	 * 
+	 * @return list of Distiller information
 	 */
 	@GetMapping("/distillers")
 	public List<BourbonDistiller> listAllDistillers() {
@@ -84,58 +103,90 @@ public class BourbonCollectionController {
 		return bottleService.retrieveAllDistillers();
 	}
 
-	// GET distillery by ID
+	/**
+	 * GET distillery by ID
+	 * 
+	 * @param distillerId - PathVariable
+	 * @return single Distiller information
+	 */
 	@GetMapping("/distiller/{distillerId}")
-	public BourbonDistiller findDistillerById(Long distillerId) {
+	public BourbonDistiller findDistillerById(@PathVariable Long distillerId) {
 		log.info("Retrieving distiller with ID={}", distillerId);
 		return bottleService.retrieveDistillerById(distillerId);
 	}
 
+	/**
+	 * GET all bottles
+	 * 
+	 * @return list of Bottle information
+	 */
 	@GetMapping("/bottles")
 	public List<BottleData> listAllBottlesInCollection() {
 		log.info("Listing all bottles in the collection");
 		return bottleService.retrieveAllBottles();
 	}
 
-	// GET Bottle by ID
+	/**
+	 * GET Bottle by ID
+	 * 
+	 * @param bottleId - PathVariable
+	 * @return Bottle information
+	 */
 	@GetMapping("/bottle/{bottleId}")
 	public BottleData findBottleById(@PathVariable Long bottleId) {
 		log.info("Retrieving bottle with ID={}", bottleId);
 		return bottleService.retrieveBottleById(bottleId);
 	}
 
-	// GET Store by Bottle ID (Where did I buy that?)
+	/**
+	 * GET Store by Bottle ID (Where did I buy that?)
+	 * 
+	 * @param bottleId - PathVariable
+	 * @return Store information for a single Bottle
+	 */
 	@GetMapping("/store/bottle/{bottleId}")
 	public Set<BourbonStore> findStoreByBottleId(@PathVariable Long bottleId) {
 		log.info("Retrieving store for bottle with ID={}", bottleId);
 		return bottleService.retrieveStoreByBottleId(bottleId);
 	}
 
-	/*
-	 *  PUT for bottle
-	 *  
+	/**
+	 * PUT for bottle
+	 * 
+	 * @param distillerId - PathVariable
+	 * @param bottleId    - PathVariable
+	 * @param bottleData  - RequestBody
+	 * @return updated Bottle information
 	 */
 	@PutMapping("{distillerId}/bottle/{bottleId}")
-	public BottleData updateBottle(@PathVariable Long distillerId, @PathVariable Long bottleId, @RequestBody BottleData bottleData) {
+	public BottleData updateBottle(@PathVariable Long distillerId, @PathVariable Long bottleId,
+			@RequestBody BottleData bottleData) {
 		bottleData.setBottleId(bottleId);
 		log.info("Updating bottle {} from distiller {}", bottleId, distillerId);
 		return bottleService.saveBottle(bottleData, distillerId);
 	}
-	/*
-	 *  PUT for distillery
-	 *  
-	 *  
+
+	/**
+	 * PUT for distillery
+	 * 
+	 * @param distillerId      - PathVariable
+	 * @param bourbonDistiller - RequestBody
+	 * @return updated Distiller information
 	 */
 	@PutMapping("/distiller/{distillerId}")
-	public BourbonDistiller updateDistillery(@PathVariable Long distillerId, @RequestBody BourbonDistiller bourbonDistiller) {
+	public BourbonDistiller updateDistillery(@PathVariable Long distillerId,
+			@RequestBody BourbonDistiller bourbonDistiller) {
 		bourbonDistiller.setDistillerId(distillerId);
 		log.info("Updating distiller {}", distillerId);
 		return bottleService.saveDistiller(bourbonDistiller);
 	}
-	
-	/*
-	 *  PUT for store
-	 *  
+
+	/**
+	 * PUT for store
+	 * 
+	 * @param storeId      - PathVariable
+	 * @param bourbonStore - RequestBody
+	 * @return updated Store information
 	 */
 	@PutMapping("/store/{storeId}")
 	public BourbonStore updateStore(@PathVariable Long storeId, @RequestBody BourbonStore bourbonStore) {
@@ -143,12 +194,12 @@ public class BourbonCollectionController {
 		log.info("Updating store {}", storeId);
 		return bottleService.saveStore(bourbonStore);
 	}
-	
+
 	/**
 	 * DELETE single bottle by ID
 	 * 
-	 * @param bottleId
-	 * @return
+	 * @param bottleId - PathVariable
+	 * @return message confirming deletion of bottle with provided ID
 	 */
 	@DeleteMapping("/bottle/{bottleId}")
 	public Map<String, String> deleteBottleById(@PathVariable Long bottleId) {
@@ -158,21 +209,31 @@ public class BourbonCollectionController {
 		return Map.of("message", "Deletion of bottle with ID=" + bottleId + " was successful.");
 	}
 
-	// DELETE distiller by ID
+	/**
+	 * DELETE distiller by ID
+	 * 
+	 * @param distillerId - PathVariable
+	 * @return message confirming deletion of distiller with provided ID
+	 */
 	@DeleteMapping("/distiller/{distillerId}")
-	public Map<String, String> deleteDistillerById(@PathVariable Long distillerId){
+	public Map<String, String> deleteDistillerById(@PathVariable Long distillerId) {
 		log.info("Deleting distiller with ID={}", distillerId);
 		bottleService.deleteDistillerById(distillerId);
-		
+
 		return Map.of("message", "Deletion of distiller with ID=" + distillerId + " was successful.");
 	}
-	
-	// DELETE store by ID
+
+	/**
+	 * DELETE store by ID
+	 * 
+	 * @param storeId - PathVariable
+	 * @return message confirming deletion of store with provided ID
+	 */
 	@DeleteMapping("/store/{storeId}")
-	public Map<String, String> deleteStoreById(@PathVariable Long storeId){
+	public Map<String, String> deleteStoreById(@PathVariable Long storeId) {
 		log.info("Deleting store with ID={}", storeId);
 		bottleService.deleteStoreById(storeId);
-		
+
 		return Map.of("message", "Deletion of store with ID=" + storeId + " was successful.");
 	}
 }

@@ -1,0 +1,33 @@
+"POST Distiller"
+{
+	"distillerName": "Kentucky Against All Y'all",
+	"city": "Lexington",
+	"state": "KY",
+	"zip": "40514"
+}
+
+"POST Bottle"
+{
+	"name": "Cayts By 90",
+	"proof": "90.0",
+	"label": "Single Barrel",
+	"price": "45.99"
+}
+
+"POST Store"
+{
+	"storeName": "Liquor Barn",
+	"streetAddress": "921 Beaumont Circle Pkwy #150",
+	"city": "Lexington",
+	"state": "KY",
+	"zip": "40513"
+}
+
+"PUT Store"
+{
+	"storeName": "Liquor Barn",
+	"streetAddress": "1837 Plaudit Pl",
+	"city": "Lexington",
+	"state": "KY",
+	"zip": "40509"
+}

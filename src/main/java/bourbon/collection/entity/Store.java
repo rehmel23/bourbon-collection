@@ -12,20 +12,33 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+/**
+ * Store entity
+ * 
+ * @author clayr
+ *
+ */
 @Entity
 @Data
 public class Store {
-	
+	/**
+	 * Fields for Store entity
+	 */
+	// store_id is Primary Key for store table
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long storeId;
-	
+
 	private String storeName;
 	private String streetAddress;
 	private String city;
 	private String state;
 	private String zip;
-	
+
+	/**
+	 * Store relationship to Bottle is a Many-to-Many relationship. Excluded methods
+	 * to prevent recursion.
+	 */
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@ManyToMany(mappedBy = "stores")

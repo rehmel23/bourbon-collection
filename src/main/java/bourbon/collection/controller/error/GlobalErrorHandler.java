@@ -10,27 +10,36 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Global Error Handler
+ * 
+ * @author clayr
+ *
+ */
 @RestControllerAdvice
 @Slf4j
 public class GlobalErrorHandler {
 
+	// How to handle IllegalArgumentExceptions
 	@ExceptionHandler(IllegalArgumentException.class)
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public Map<String, String> handleIllegalArgumentException(IllegalArgumentException ex){
+	public Map<String, String> handleIllegalArgumentException(IllegalArgumentException ex) {
 		log.error("Exception", ex.toString());
 		return Map.of("message", ex.toString());
 	}
-	
+
+	// How to handle NoSuchElementExceptions
 	@ExceptionHandler(NoSuchElementException.class)
 	@ResponseStatus(code = HttpStatus.NOT_FOUND)
-	public Map<String, String> handleNoSuchElementException(NoSuchElementException ex){
+	public Map<String, String> handleNoSuchElementException(NoSuchElementException ex) {
 		log.error("Exception", ex.toString());
 		return Map.of("message", ex.toString());
 	}
-	
+
+	// How to handle UnsupportedOperationException
 	@ExceptionHandler(UnsupportedOperationException.class)
 	@ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
-	public Map<String, String> handleUnsupportedOperationException(UnsupportedOperationException ex){
+	public Map<String, String> handleUnsupportedOperationException(UnsupportedOperationException ex) {
 		log.error("Exception", ex.toString());
 		return Map.of("message", ex.toString());
 	}
